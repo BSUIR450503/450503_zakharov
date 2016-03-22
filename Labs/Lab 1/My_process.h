@@ -81,34 +81,46 @@ Process :: Process(int argc,char* argv[]){
 
 	PID pid;
 
-	int number = 8;
+	int number;
 
-	int result = 0;
+	int result;
 
 	int fd[2];
 
 	pipe(fd);
 
-	FILE *input = fdopen(fd[1],"w");
-
-	FILE *output = fdopen(fd[0],"r");
-
 	PID = fork();
 
 	if(!pid){
 
-		int sqrt = number*number;
+		char readDescriptor[4], writeDescriptor[4];
 
-		fwrite(&sqrt,1,sizeof(int),input);
+        sprintf(readDescriptor, "%d", fd[0]);
+
+        sprintf(writeDescriptor, "%d", fd[1]);
+
+        execl("second", readDescriptor, writeDescriptor, NULL);
 
 	}
 	if(pid>0){
 
-		fread(&result,sizeof(int),1,output);
+		printf("Input number: ");
 
-		printf("Number = %d\n",number);
+		scanf("%d",&number);
 
-	    printf("Sqrt = %d\n",result);
+		write([fd[1], &number, sizeof(int));
+
+        close(fd[1]);
+
+        wait(NULL);
+
+        read(fd[0], &result, sizeof(int));
+
+        close(fd[0]);
+
+		printf("Number: %d",number);
+
+		printf("Sqrt: %d",result);
 	}
 
 #endif

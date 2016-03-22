@@ -5,7 +5,7 @@
 #define PID HANDLE
 #endif
 
-#ifdef linux
+#ifdef  __linux__
 #include <stdlib.h>
 #include <unistd.h>
 #include <iostream>
@@ -33,6 +33,28 @@ int main(int argc, char* argv[]){
 	WriteFile(namedPipe, &result, sizeof(int), &write, NULL);
 
 	CloseHandle(namedPipe);
+
+#endif
+
+#ifdef  __linux__
+
+	int fd[2];
+
+	int number;
+
+	fd[0] = atoi(argv[0]);
+
+	fd[1] = atoi(argv[1]);
+
+	read(fd[0], &number, sizeof(int));
+
+	close(fd[0]);
+
+	number *= number;
+
+	write(fd[1], &number, sizeof(int));
+
+	close(fd[1]);
 
 #endif
 }
